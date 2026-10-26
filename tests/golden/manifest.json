@@ -1,0 +1,361 @@
+{
+  "meta": {
+    "title": "미리미소 원고 골든 매니페스트 — 가상 환자 페르소나·캐릭터·관계 고정 (S48)",
+    "version": 6,
+    "source": "js/casehub.js CASES 시드 · server.js 시드 계정 · 미리미소-데모시나리오.md v2.2",
+    "비고": "내부 품질 자산(비공개) — 단일 파일 번들·배포물에 미포함. 기대값(숫자·문구·상태)은 이 파일이 단일 출처 — 화면·API 변경 시 여기만 갱신하면 원고 러너가 전 회귀를 판정한다. (v6: S55 캡처 퀘스트 — J-D uiCapture 확장)",
+    "재실행": "cd /home/user/tests && node run_script.js  (결과가 실행마다 동일해야 한다 — 결정적 골든)"
+  },
+  "sample": {
+    "label": "데모 시드 5케이스 (A/B 샘플 — A=실행 결과, B=이 매니페스트 기대값)",
+    "cases": [
+      "C-2601",
+      "C-2602",
+      "C-2603",
+      "C-2604",
+      "C-2605"
+    ]
+  },
+  "characters": [
+    {
+      "id": "doctor",
+      "name": "김민수 원장",
+      "role": "clinic",
+      "code": "MIRI-CLINIC-2026",
+      "desc": "담당의 — 전 케이스 assignee"
+    },
+    {
+      "id": "lab",
+      "name": "OO기공소 담당자",
+      "role": "lab",
+      "code": "MIRI-LAB-2026",
+      "desc": "협력 기공소 — 전 케이스 수주"
+    },
+    {
+      "id": "p1",
+      "name": "김○○",
+      "role": "patient",
+      "code": "MIRI-PAT-2601",
+      "caseId": "C-2601",
+      "persona": "46번 임플란트(제작) — 기공소 수정 요청 대기 중, 계정 보유·자기 케이스만 열람"
+    },
+    {
+      "id": "p2",
+      "name": "박○○",
+      "role": "patient",
+      "caseId": "C-2602",
+      "persona": "All-on-X(스캔) — 재업로드 요구 중, 계정 미발급"
+    },
+    {
+      "id": "p3",
+      "name": "이○○",
+      "role": "patient",
+      "caseId": "C-2603",
+      "persona": "36번 임플란트(동의) — 동의 단계, 계정 미발급"
+    },
+    {
+      "id": "p4",
+      "name": "최○○",
+      "role": "patient",
+      "caseId": "C-2604",
+      "persona": "14번 크라운(주문) — 수명주기 시연 페르소나(발급→사용→회수→재활성), 계정 미발급"
+    },
+    {
+      "id": "p5",
+      "name": "정○○",
+      "role": "patient",
+      "caseId": "C-2605",
+      "persona": "46번 임플란트 장착 완료(관리) — 정기검진·사후관리+오늘의 관리(S50 데일리 기록·맞춤 제안) 여정, 계정 미발급"
+    }
+  ],
+  "relationships": [
+    {
+      "from": "doctor",
+      "rel": "담당의(assignee)",
+      "to": "C-2601~C-2605 전체"
+    },
+    {
+      "from": "lab",
+      "rel": "수주 기공소",
+      "to": "C-2601~C-2605 전체 (OO기공소)"
+    },
+    {
+      "from": "p1",
+      "rel": "계정 바인딩 — 자기 케이스만",
+      "to": "C-2601"
+    },
+    {
+      "from": "p4",
+      "rel": "발급 시 바인딩",
+      "to": "C-2604"
+    },
+    {
+      "from": "C-2601",
+      "rel": "수정 요청(기공소→병원) — 긴급 표시",
+      "to": "clinic 허브 긴급 2건"
+    },
+    {
+      "from": "clinic",
+      "rel": "주문 제출(체크 5/5)",
+      "to": "lab 큐 — 호환 4/4 접수"
+    },
+    {
+      "from": "p5",
+      "rel": "데일리 셀프 기록 — 오늘의 관리(S50)",
+      "to": "기기 로컬 기록 → 맞춤 제안·추이"
+    },
+    {
+      "from": "p5",
+      "rel": "단계 기반 제안 — 회복기/안정기/유지기 (S51)",
+      "to": "관리 정보·운동·케어 제품 카드"
+    },
+    {
+      "from": "p5",
+      "rel": "풋터 네비 — 오늘→루틴→여정 이동 (S52)",
+      "to": "오늘의 루틴 · 치아 관리 여정"
+    }
+  ],
+  "journeys": [
+    {
+      "id": "J-A",
+      "title": "김○○ 여정 — 계정 환자의 자기 케이스 열람·개인화 (auth API)",
+      "persona": "p1",
+      "mode": "auth",
+      "steps": [
+        {
+          "kind": "login",
+          "code": "MIRI-PAT-2601",
+          "expect": {
+            "status": 200,
+            "role": "patient",
+            "name": "김○○"
+          }
+        },
+        {
+          "kind": "getCases",
+          "expect": {
+            "count": 1,
+            "firstId": "C-2601"
+          }
+        },
+        {
+          "kind": "caseFields",
+          "id": "C-2601",
+          "expect": {
+            "tooth": "46",
+            "proc": "우측 제1대구치 임플란트",
+            "status": "제작",
+            "assignee": null,
+            "lab": null
+          },
+          "note": "null = 환자 응답에서 미노출(권한 경계) — 내부 필드는 clinic 스코프에서만"
+        },
+        {
+          "kind": "prefsPost",
+          "prefs": {
+            "zoom": "l",
+            "theme": "blue",
+            "nick": "김○○ 태블릿"
+          },
+          "expect": {
+            "ok": true,
+            "zoom": "l",
+            "theme": "blue",
+            "nick": "김○○ 태블릿"
+          }
+        },
+        {
+          "kind": "prefsGet",
+          "expect": {
+            "zoom": "l",
+            "theme": "blue",
+            "nick": "김○○ 태블릿"
+          }
+        }
+      ]
+    },
+    {
+      "id": "J-B",
+      "title": "최○○ 수명주기 — 실장이 발급→사용→회수→재활성 (auth API)",
+      "persona": "p4",
+      "mode": "auth",
+      "steps": [
+        {
+          "kind": "login",
+          "code": "MIRI-CLINIC-2026",
+          "expect": {
+            "status": 200,
+            "role": "clinic"
+          }
+        },
+        {
+          "kind": "clinicCaseFields",
+          "id": "C-2604",
+          "expect": {
+            "assignee": "김민수 원장",
+            "lab": "OO기공소",
+            "status": "주문"
+          },
+          "note": "관계 고정: 담당의·수주 기공소"
+        },
+        {
+          "kind": "invite",
+          "role": "patient",
+          "name": "최○○",
+          "caseId": "C-2604",
+          "expect": {
+            "codeFormat": "MM-XXXXXXXX",
+            "name": "최○○"
+          }
+        },
+        {
+          "kind": "loginNew",
+          "expect": {
+            "status": 200,
+            "caseId": "C-2604"
+          }
+        },
+        {
+          "kind": "getCases",
+          "expect": {
+            "count": 1,
+            "firstId": "C-2604"
+          }
+        },
+        {
+          "kind": "revokeNew",
+          "expect": {
+            "ok": true,
+            "killed": 1,
+            "noticeIncludes": "세션"
+          }
+        },
+        {
+          "kind": "loginRevoked",
+          "expect": {
+            "status": 403,
+            "errorIncludes": "회수된"
+          }
+        },
+        {
+          "kind": "reactivateNew",
+          "expect": {
+            "ok": true
+          }
+        },
+        {
+          "kind": "loginNew",
+          "expect": {
+            "status": 200
+          }
+        }
+      ]
+    },
+    {
+      "id": "J-C",
+      "title": "협업 루프 — 데모 원고 §1 핵심 흐름 (demo UI·오프라인 단일 파일 조건)",
+      "persona": "p4 + doctor + lab",
+      "mode": "demo-ui",
+      "steps": [
+        {
+          "kind": "uiPatientStart"
+        },
+        {
+          "kind": "uiCareEntry",
+          "expect": {
+            "text": "치료 후 관리"
+          }
+        },
+        {
+          "kind": "uiCaseHub",
+          "expect": {
+            "urgentText": "긴급\\s*2건",
+            "patientRow": "C-2601",
+            "patientName": "김○○",
+            "targetCase": "C-2604"
+          }
+        },
+        {
+          "kind": "uiOrderFlow",
+          "case": "C-2604",
+          "expect": {
+            "checks": 5,
+            "submitText": "기공소로 제출",
+            "statusAfter": "제작"
+          }
+        },
+        {
+          "kind": "uiLabQueue",
+          "expect": {
+            "compat": "/4"
+          }
+        }
+      ]
+    },
+    {
+      "id": "J-D",
+      "title": "정○○ 관리 여정 — 기록→루틴→여정→캡처 퀘스트→프로필 (풋터 네비 · demo UI·오프라인)",
+      "persona": "p5",
+      "mode": "demo-ui",
+      "steps": [
+        {
+          "kind": "uiPatientReturn"
+        },
+        {
+          "kind": "uiToday",
+          "expect": {
+            "chip": "오늘의 관리",
+            "groups": 6,
+            "suggestions": [
+              "아주 좋아요"
+            ]
+          }
+        },
+        {
+          "kind": "uiRoutine",
+          "expect": {
+            "sections": [
+              "관리 정보",
+              "오늘의 운동",
+              "케어 제품 제안"
+            ],
+            "products": [
+              "초미세 칫솔",
+              "치간칫솔",
+              "무알코올 가글",
+              "워터픽"
+            ],
+            "points": "1/4점"
+          }
+        },
+        {
+          "kind": "uiCapture",
+          "expect": {
+            "dots": 30,
+            "after": "1/30일"
+          }
+        },
+        {
+          "kind": "uiJourney",
+          "expect": {
+            "dots": 15,
+            "day": "D\\+1일차"
+          }
+        },
+        {
+          "kind": "uiProfile",
+          "expect": {
+            "name": "정○○",
+            "greet": "안녕하세요, 정○○님"
+          }
+        }
+      ]
+    }
+  ],
+  "manifestChecks": {
+    "characters": 7,
+    "relationships": 9,
+    "sampleCases": 5,
+    "journeys": 4
+  }
+}

@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>미리미소 — 치과 상담, 미리 보고 시작하세요</title>
+<meta name="description" content="미리미소는 치과 방문 전 미소 시뮬레이션부터 스캔 리뷰, 기공 주문까지 환자·의료진·기공소를 하나의 케이스 흐름으로 잇는 상담 준비 웹앱입니다.">
+<style>
+:root{
+  --a2:#27AE8D; --teal:#17BEBB; --c:#16826B; --l:#3EC9A7;
+  --q:#1F2A37; --o:#6B7686; --bg:#F4F6F9; --line:#E4EAF0; --card:#fff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Malgun Gothic",sans-serif;color:var(--q);background:var(--bg);line-height:1.65;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;cursor:pointer;font-weight:700;font-size:15px;padding:13px 22px;border-radius:12px;transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
+.btn.pri{color:#fff;background:linear-gradient(149deg,var(--a2),var(--teal));box-shadow:0 8px 20px rgba(23,190,187,.28)}
+.btn.pri:hover{transform:translateY(-1px);box-shadow:0 12px 24px rgba(23,190,187,.34)}
+.btn.ghost{background:#fff;color:var(--c);border:1.5px solid #C9EDE2}
+.btn.ghost:hover{background:#EFFaf6}
+header.site{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:18px;height:64px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-.02em}
+.logo .mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(149deg,var(--a2),var(--teal));display:grid;place-items:center;flex:none}
+.nav .links{margin-left:auto;display:flex;gap:22px;font-size:14.5px;color:var(--o);font-weight:600}
+.nav .links a:hover{color:var(--c)}
+.nav .btn{padding:10px 18px;font-size:14px}
+@media(max-width:760px){.nav .links{display:none}}
+.hero{position:relative;overflow:hidden;background:linear-gradient(180deg,#EAFaf4 0%,var(--bg) 78%)}
+.hero .wrap{padding:76px 20px 64px;text-align:center;position:relative;z-index:1}
+.badge{display:inline-block;background:#fff;border:1.5px solid #C9EDE2;color:var(--c);font-weight:700;font-size:13px;padding:6px 14px;border-radius:999px}
+.hero h1{font-size:clamp(32px,5.4vw,54px);line-height:1.22;letter-spacing:-.03em;margin:22px 0 14px}
+.hero h1 .grad{background:linear-gradient(92deg,var(--a2),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.sub{font-size:clamp(15px,2vw,18px);color:var(--o);max-width:640px;margin:0 auto 30px}
+.cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.hero .note{margin-top:16px;font-size:12.5px;color:#93A1B3}
+.hero-art{max-width:880px;margin:44px auto 0;background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:0 24px 48px rgba(31,42,55,.10);padding:22px;text-align:left}
+.hero-art .bar{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.dot{width:10px;height:10px;border-radius:50%}
+.flow{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.flow .st{background:#F2F8F6;border:1px solid #E0EFE9;border-radius:12px;padding:12px 8px;text-align:center}
+.flow .st b{display:block;font-size:13.5px}
+.flow .st span{font-size:11.5px;color:var(--o)}
+.flow .st.on{background:linear-gradient(149deg,var(--a2),var(--teal));color:#fff;border-color:transparent}
+.flow .st.on span{color:rgba(255,255,255,.85)}
+@media(max-width:760px){.flow{grid-template-columns:repeat(4,1fr)}}
+section{padding:72px 0}
+.kicker{text-align:center;color:var(--c);font-weight:800;font-size:13px;letter-spacing:.14em}
+h2.title{text-align:center;font-size:clamp(24px,3.6vw,34px);letter-spacing:-.02em;margin:10px 0 8px}
+p.lead{text-align:center;color:var(--o);max-width:620px;margin:0 auto 40px;font-size:15.5px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+@media(max-width:900px){.grid3{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px}
+.card h3{margin:12px 0 8px;font-size:18px;letter-spacing:-.01em}
+.card p{margin:0;color:var(--o);font-size:14.5px}
+.ico{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;background:#EAFaf4;border:1px solid #D8F0E6}
+.role{border-top:4px solid var(--a2)}
+.role.staff{border-top-color:var(--teal)}
+.role.lab{border-top-color:#2D5FA8}
+.role ul{margin:14px 0 0;padding:0;list-style:none}
+.role li{padding:7px 0 7px 26px;position:relative;font-size:14.5px;color:#3D4A5C;border-top:1px dashed #EDF1F5}
+.role li:first-child{border-top:0}
+.role li::before{content:"";position:absolute;left:2px;top:14px;width:8px;height:8px;border-radius:50%;background:var(--l)}
+.role .tag{font-size:12px;font-weight:800;color:var(--c);letter-spacing:.08em}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:900px){.steps{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.steps{grid-template-columns:1fr}}
+.step{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+.step .n{width:30px;height:30px;border-radius:50%;background:linear-gradient(149deg,var(--a2),var(--teal));color:#fff;font-weight:800;font-size:14px;display:grid;place-items:center}
+.step h3{font-size:16px;margin:12px 0 6px}
+.step p{font-size:13.5px;color:var(--o);margin:0}
+.trust{background:linear-gradient(149deg,#123B31,#175E4C);color:#EAFaf4;border-radius:20px;padding:40px}
+.trust h2{color:#fff;margin:0 0 8px;font-size:26px;letter-spacing:-.02em}
+.trust p.sub{color:#BFE8D8;margin:0 0 26px;font-size:15px}
+.trust .grid3{gap:14px}
+.trust .tcard{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:20px}
+.trust .tcard h3{color:#fff;font-size:16px;margin:0 0 6px}
+.trust .tcard p{color:#C4E9DA;font-size:13.5px;margin:0}
+.pilot{text-align:center}
+.pilot .card{max-width:720px;margin:0 auto;padding:40px 30px}
+footer{border-top:1px solid var(--line);background:#fff;padding:36px 0 44px;margin-top:8px}
+footer .fwrap{display:flex;gap:26px;flex-wrap:wrap;justify-content:space-between;align-items:flex-start}
+footer small{color:#93A1B3;display:block;max-width:640px;line-height:1.7}
+.foot-links{display:flex;gap:18px;font-size:13.5px;color:var(--o);font-weight:600}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap nav">
+    <a class="logo" href="#top" aria-label="미리미소 홈">
+      <span class="mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M7 4.5C5 4.5 3.8 6 4.1 8l1.2 9.2c.2 1.4 2 1.6 2.5.3l1-3c.3-.9 1.9-.9 2.2 0l1 3c.5 1.3 2.3 1.1 2.5-.3L19.9 8c.3-2-1-3.5-2.9-3.5-1.4 0-2 .8-5 .8s-3.6-.8-5-.8Z" fill="#fff"/></svg>
+      </span>
+      미리미소
+    </a>
+    <nav class="links" aria-label="주요 메뉴">
+      <a href="#features">기능</a>
+      <a href="#roles">역할별 안내</a>
+      <a href="#flow">워크플로</a>
+      <a href="#trust">안전 원칙</a>
+      <a href="#pilot">파일럿 안내</a>
+    </nav>
+    <a class="btn pri" href="미리미소-웹앱.html">데모 체험하기</a>
+  </div>
+</header>
+
+<main id="top">
+  <!-- 히어로 -->
+  <div class="hero">
+    <div class="wrap">
+      <span class="badge">🦷 스마일치과 상담 준비 서비스</span>
+      <h1>치과 상담,<br><span class="grad">미리 보고</span> 시작하세요</h1>
+      <p class="sub">미리미소는 방문 전 미소 시뮬레이션부터 구강 스캔 리뷰, 기공 주문까지<br>환자·의료진·기공소를 하나의 케이스 흐름으로 잇는 웹앱입니다.</p>
+      <div class="cta-row">
+        <a class="btn pri" href="미리미소-웹앱.html">데모 체험하기 →</a>
+        <a class="btn ghost" href="#pilot">파일럿 도입 안내</a>
+      </div>
+      <p class="note">상담 준비·교육용 도구입니다. 의료기기가 아니며, 진단·처방을 대체하지 않습니다.</p>
+
+      <div class="hero-art" aria-label="미리미소 케이스 워크플로 미리보기">
+        <div class="bar">
+          <span class="dot" style="background:#F3C4B8"></span>
+          <span class="dot" style="background:#F3DFAE"></span>
+          <span class="dot" style="background:#BFE8D8"></span>
+          <b style="font-size:13px;color:var(--o);margin-left:6px">케이스 워크플로 — 상담부터 관리까지 한 화면에서</b>
+        </div>
+        <div class="flow">
+          <div class="st on"><b>상담</b><span>시뮬레이션·질문지</span></div>
+          <div class="st"><b>스캔</b><span>구강 스캔 리뷰</span></div>
+          <div class="st"><b>계획</b><span>진료 Order·Design</span></div>
+          <div class="st"><b>동의</b><span>전자동의 기록</span></div>
+          <div class="st"><b>주문</b><span>기공 주문서</span></div>
+          <div class="st"><b>제작</b><span>밀링 현황 확인</span></div>
+          <div class="st"><b>장착·관리</b><span>사후 관리 기록</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 이런 고민에서 출발했습니다 -->
+  <section id="features">
+    <div class="wrap">
+      <div class="kicker">WHY MIRIMISO</div>
+      <h2 class="title">상담실 안팎의 막막함을 줄입니다</h2>
+      <p class="lead">치료 결과를 상상하기 어려운 환자, 스캔 데이터를 상담으로 잇기 바쁜 의료진,<br>주문 정보를 반복 확인하는 기공소 — 각자의 고민을 하나의 흐름으로 연결합니다.</p>
+      <div class="grid3">
+        <div class="card">
+          <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#16826B" stroke-width="2"/><path d="m20 20-3.8-3.8" stroke="#16826B" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <h3>“치료하면 어떻게 달라지나요?”</h3>
+          <p>환자는 내원 전에 가상 시뮬레이션으로 변화를 미리 보고, 궁금한 점을 상담 질문지로 정리해 갈 수 있습니다.</p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 19V6a2 2 0 0 1 2-2h13v13H6a2 2 0 0 0-2 2Zm0 0a2 2 0 0 0 2 2h13" stroke="#16826B" stroke-width="2" stroke-linejoin="round"/></svg></div>
+          <h3>“스캔은 했는데, 설명이 길어져요”</h3>
+          <p>의료진은 스캔 리뷰와 소견 카드를 상담 흐름 안에서 확인하고, 환자 리포트를 동의 기반으로 공유받아 케이스로 시작합니다.</p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3v3m0 12v3m9-9h-3M6 12H3m14.5-6.5-2 2m-7 7-2 2m11 0-2-2m-7-7-2-2" stroke="#16826B" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <h3>“주문 정보가 자꾸 어긋나요”</h3>
+          <p>기공소는 주문 큐에서 케이스를 받고 호환성을 확인하며, 제작 단계(밀링 포함)를 직접 입력해 병원과 같은 화면을 봅니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 역할별 안내 -->
+  <section id="roles" style="padding-top:8px">
+    <div class="wrap">
+      <div class="kicker">FOR EVERYONE IN THE LOOP</div>
+      <h2 class="title">환자·의료진·기공소, 각자의 화면</h2>
+      <p class="lead">하나의 케이스를 세 역할이 각자의 화면에서 이어 봅니다. 권한은 역할별로 분리되고, 열람 기록은 감사로그에 남습니다.</p>
+      <div class="grid3">
+        <div class="card role">
+          <span class="tag">환자 · 스마일치과</span>
+          <h3>미리 보고, 기록하고</h3>
+          <ul>
+            <li>미소 시뮬레이션 — 사진으로 가상 결과 미리보기 (교육용)</li>
+            <li>상담 질문지 — 궁금한 점을 정리해 병원에 공유</li>
+            <li>3D 구강 스캔 기록 — 내 스캔과 추이를 한곳에서</li>
+            <li>오늘의 관리 — 상태 체크·메모·촬영 기록 (기기에만 저장)</li>
+          </ul>
+        </div>
+        <div class="card role staff">
+          <span class="tag">의료진 · CLINIC</span>
+          <h3>리뷰하고, 상담으로 잇고</h3>
+          <ul>
+            <li>스캔 리뷰 — STL 데이터 파싱·3D 뷰어·소견 카드</li>
+            <li>상담 리포트 — 환자 동의 시에만 열람</li>
+            <li>진료 Order·Scan·Design — FDI 32치 처방 흐름</li>
+            <li>케이스 허브 — 상담부터 관리까지 단계 관리</li>
+          </ul>
+        </div>
+        <div class="card role lab">
+          <span class="tag">기공소 · LAB</span>
+          <h3>받고, 확인하고, 제작하고</h3>
+          <ul>
+            <li>주문 큐 — 병원 주문을 케이스 단위로 수신</li>
+            <li>호환성 자동 검증 — 보철 정보 확인 (참고용)</li>
+            <li>밀링 현황 — 제작 단계를 직접 입력해 공유</li>
+            <li>주문 케이스만 열람 — 환자 소견 접근 권한 없음</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 워크플로 -->
+  <section id="flow" style="padding-top:8px">
+    <div class="wrap">
+      <div class="kicker">WORKFLOW</div>
+      <h2 class="title">상담부터 관리까지, 끊기지 않게</h2>
+      <p class="lead">환자의 상담 준비가 의료진의 케이스가 되고, 기공의 제작으로 이어지는 전체 여정을 단계별로 안내합니다.</p>
+      <div class="steps">
+        <div class="step"><div class="n">1</div><h3>상담 준비</h3><p>환자가 시뮬레이션과 질문지를 준비해 병원에 공유합니다.</p></div>
+        <div class="step"><div class="n">2</div><h3>스캔·리뷰</h3><p>구강 스캔 데이터를 3D로 확인하고 상담에 활용합니다.</p></div>
+        <div class="step"><div class="n">3</div><h3>계획·동의</h3><p>치료 계획을 세우고 전자동의로 기록합니다.</p></div>
+        <div class="step"><div class="n">4</div><h3>주문·제작</h3><p>기공 주문부터 밀링·장착, 사후 관리까지 이어집니다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 안전 원칙 -->
+  <section id="trust" style="padding-top:8px">
+    <div class="wrap">
+      <div class="trust">
+        <h2>안전을 먼저 설계했습니다</h2>
+        <p class="sub">미리미소는 상담 준비와 교육을 돕는 도구입니다. 의료 판단의 자리는 언제나 진료실에 있습니다.</p>
+        <div class="grid3">
+          <div class="tcard">
+            <h3>비진단 원칙</h3>
+            <p>시뮬레이션과 소견은 참고 자료일 뿐, 진단·처방을 대체하지 않습니다. 최종 판단은 담당 치과의사가 합니다.</p>
+          </div>
+          <div class="tcard">
+            <h3>사진은 기기에만</h3>
+            <p>환자 사진과 캡처는 서버로 업로드되지 않고 이 기기에만 저장됩니다. 리포트 공유는 명시적 동의가 있을 때만 이뤄집니다.</p>
+          </div>
+          <div class="tcard">
+            <h3>검증된 품질</h3>
+            <p>자동화 검증 1,709개를 전수 통과한 빌드만 공개합니다. 데모의 모든 환자·수치는 가상 데이터입니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 파일럿 안내 -->
+  <section id="pilot" class="pilot">
+    <div class="wrap">
+      <div class="kicker">PILOT PROGRAM</div>
+      <h2 class="title">파일럿 병원을 찾습니다</h2>
+      <p class="lead">미팅 자료부터 온보딩 가이드까지, 도입을 바로 시작할 수 있는 패키지가 준비되어 있습니다.</p>
+      <div class="card">
+        <h3 style="margin-top:0">먼저, 데모로 확인해 보세요</h3>
+        <p style="color:var(--o);font-size:15px">설치 없이 브라우저에서 바로 열립니다. 환자·의료진·기공소 세 가지 역할을 모두 체험할 수 있고, 모든 데이터는 가상 데모입니다.</p>
+        <div class="cta-row" style="margin-top:22px">
+          <a class="btn pri" href="미리미소-웹앱.html">데모 체험하기 →</a>
+          <a class="btn ghost" href="#roles">역할별 안내 보기</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap fwrap">
+    <div>
+      <a class="logo" href="#top" style="margin-bottom:12px">
+        <span class="mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M7 4.5C5 4.5 3.8 6 4.1 8l1.2 9.2c.2 1.4 2 1.6 2.5.3l1-3c.3-.9 1.9-.9 2.2 0l1 3c.5 1.3 2.3 1.1 2.5-.3L19.9 8c.3-2-1-3.5-2.9-3.5-1.4 0-2 .8-5 .8s-3.6-.8-5-.8Z" fill="#fff"/></svg>
+        </span>
+        미리미소
+      </a>
+      <small>
+        미리미소(환자용 서비스명: 스마일치과)는 치과 상담 준비·교육을 돕는 웹앱입니다. 의료기기가 아니며 진단·처방을 대체하지 않습니다.<br>
+        이 페이지와 데모에 표시되는 환자 정보·수치는 모두 가상 데이터입니다. © 2026 미리미소
+      </small>
+    </div>
+    <nav class="foot-links" aria-label="하단 메뉴">
+      <a href="#features">기능</a>
+      <a href="#roles">역할별 안내</a>
+      <a href="#trust">안전 원칙</a>
+      <a href="미리미소-웹앱.html">데모 체험</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+.DS_Store
+
+# Local database files may contain sessions or case data.
+/mirimiso-webapp/data/*.db
+/mirimiso-webapp/data/*.db-*
+
+# Uploaded material and working screenshots may contain identifiable images.
+/uploads/
+/assets/*.jpg
+/*.png
+
+# Handoff archives can bundle local data and media.
+*.zip

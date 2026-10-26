@@ -1,0 +1,12 @@
+{
+ "name": "mirimiso-tests",
+ "private": true,
+ "description": "미리미소 웹앱 스모크 테스트 (jsdom + 실서버). 참고: build/ 디렉터리명은 워크스페이스 스냅샷에서 제외되어 세션 복원 시 사라짐 → tests/ 사용",
+ "scripts": {
+  "test": "node smoke_docs.js && node smoke_server.js && node smoke_s23.js && node smoke_s24.js && node smoke_s25.js && node smoke_s29.js && node smoke_s30.js && node smoke_s31.js && node smoke_s32.js && node smoke_s33.js && node smoke_s35.js && node smoke_s36.js && node smoke_s37.js && node smoke_s38.js && node smoke_s39.js && node smoke_s41.js && node smoke_s42.js && node smoke_s44.js && node smoke_s45.js && node smoke_s46.js && node smoke_s47.js && node smoke_s50.js && node smoke_s52.js && node smoke_s55.js && node run_script.js && node repro/repro_20261016_preview_selfextract.js && node smoke_core.js && node smoke_s5.js && node smoke_s6.js && node smoke_s7.js && node smoke_s8.js && node smoke_s9.js && node smoke_s10.js && node smoke_s11.js && node smoke_s12.js && node smoke_s13.js && node smoke_s14.js && node smoke_s15.js && node smoke_s16.js && node smoke_s17.js && node smoke_s18.js && node smoke_s19.js && node smoke_s20.js && node smoke_s21.js && node smoke_s56.js && node smoke_s57.js && node smoke_s58.js && node smoke_s59.js && node smoke_s60.js && node smoke_s61.js && node smoke_s62.js && node smoke_s63.js && node smoke_s64.js && node smoke_s65.js && node smoke_s66.js && node smoke_s67.js && node smoke_s68.js && node smoke_s69.js && node smoke_s70.js && node smoke_s71.js && node smoke_s72.js && node smoke_s73.js && node smoke_s74.js && node smoke_s75.js && node smoke_s76.js && node smoke_s77.js && node smoke_s78.js && node smoke_s79.js && node smoke_s80.js && node smoke_s81.js && node smoke_s82.js && node smoke_s83.js && node smoke_s85.js && node smoke_s86.js && node smoke_s87.js && node smoke_s88.js && node smoke_s89.js && node smoke_s90.js && node smoke_s91.js && node smoke_s92.js && node smoke_s93.js && node smoke_s94.js && node smoke_s95.js"
+ },
+ "dependencies": {
+  "acorn": "^8.19.0",
+  "jsdom": "^24.1.3"
+ }
+}

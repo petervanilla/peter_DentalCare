@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>미리미소 Clinic — 병원 대시보드 (데모)</title>
+<style>
+  :root{
+    --mint:#3EC9A7; --mint-dark:#27AE8D; --mint-deep:#16826B;
+    --mint-soft:#E4F7F1; --mint-soft2:#F0FBF7;
+    --ink:#1F2A37; --sub:#6B7686; --faint:#9AA5B4;
+    --line:#E7EBF0; --bg:#F2F5F8; --card:#FFFFFF;
+    --amber:#B9770E; --amber-bg:#FDF3E0;
+    --blue:#3F7FD9; --blue-bg:#EAF2FC;
+    --red:#D9534F;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg); color:var(--ink); min-height:100vh;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  }
+  /* ---------- top nav ---------- */
+  .nav{
+    background:#fff; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; gap:18px; padding:0 28px; height:60px;
+  }
+  .brand{display:flex; align-items:center; gap:9px; font-weight:800; font-size:16.5px; letter-spacing:-.3px; flex:none;}
+  .brand .logo{width:30px; height:30px; background:linear-gradient(135deg,var(--mint),#17A083); border-radius:9px; display:flex; align-items:center; justify-content:center;}
+  .brand small{display:block; font-size:10px; font-weight:600; color:var(--sub); letter-spacing:.2px;}
+  .clinic-chip{
+    flex:none; font-size:11px; font-weight:700; color:var(--mint-deep); background:var(--mint-soft);
+    border:1px solid #C9EDE2; padding:5px 10px; border-radius:99px;
+  }
+  .nav-tabs{display:flex; gap:2px; margin-left:10px; height:100%;}
+  .nav-tabs button{
+    border:none; background:none; font-family:inherit; font-size:13.5px; font-weight:700; color:var(--sub);
+    padding:0 16px; cursor:pointer; position:relative;
+  }
+  .nav-tabs button:hover{color:var(--ink);}
+  .nav-tabs button.on{color:var(--mint-deep);}
+  .nav-tabs button.on::after{content:""; position:absolute; left:12px; right:12px; bottom:0; height:3px; border-radius:3px 3px 0 0; background:var(--mint);}
+  .nav-right{margin-left:auto; display:flex; align-items:center; gap:12px;}
+  .today-date{font-size:12.5px; color:var(--sub); font-weight:600;}
+  .demo-ribbon{
+    font-size:10px; font-weight:800; letter-spacing:.5px; color:#fff; background:#B3BCC9;
+    padding:4px 9px; border-radius:7px;
+  }
+  /* ---------- layout ---------- */
+  .page{max-width:1280px; margin:0 auto; padding:24px 28px 60px;}
+  .page-head{display:flex; align-items:flex-end; justify-content:space-between; gap:14px; margin-bottom:18px; flex-wrap:wrap;}
+  .page-head h1{font-size:21px; letter-spacing:-.4px;}
+  .page-head p{font-size:12.5px; color:var(--sub); margin-top:5px;}
+  .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px;}
+  @media (max-width:980px){.kpis{grid-template-columns:repeat(2,1fr);}}
+  .kpi{
+    background:var(--card); border:1px solid #EDF0F4; border-radius:16px; padding:16px 18px;
+    box-shadow:0 1px 3px rgba(31,42,55,.05);
+  }
+  .kpi .k-label{font-size:11.5px; font-weight:700; color:var(--sub); display:flex; align-items:center; gap:6px;}
+  .kpi .k-value{font-size:24px; font-weight:800; letter-spacing:-.5px; margin-top:7px;}
+  .kpi .k-value small{font-size:13px; font-weight:700; color:var(--faint); margin-left:2px;}
+  .kpi .k-delta{font-size:11px; font-weight:700; margin-top:6px;}
+  .kpi .up{color:var(--mint-deep);} .kpi .down{color:var(--red);}
+  .grid{display:grid; grid-template-columns:290px 1fr 300px; gap:16px; align-items:start;}
+  @media (max-width:1100px){.grid{grid-template-columns:1fr;}}
+  .card{
+    background:var(--card); border:1px solid #EDF0F4; border-radius:18px; padding:18px;
+    box-shadow:0 1px 3px rgba(31,42,55,.05);
+  }
+  .card + .card{margin-top:16px;}
+  .card h3{font-size:14.5px; letter-spacing:-.3px; display:flex; align-items:center; gap:8px;}
+  .card .hint{font-size:11px; color:var(--faint); font-weight:600; margin-left:auto;}
+  /* ---------- schedule list ---------- */
+  .sched{margin-top:12px; display:flex; flex-direction:column; gap:8px;}
+  .s-item{
+    display:flex; gap:11px; align-items:center; border:1.5px solid var(--line); border-radius:14px;
+    padding:12px; cursor:pointer; background:#fff; transition:all .15s; text-align:left; width:100%; font-family:inherit;
+  }
+  .s-item:hover{border-color:#BFE9DC;}
+  .s-item.sel{border-color:var(--mint); background:var(--mint-soft2);}
+  .s-time{
+    flex:none; font-size:12px; font-weight:800; color:var(--mint-deep); background:var(--mint-soft);
+    border-radius:9px; padding:7px 9px; min-width:52px; text-align:center;
+  }
+  .s-item.sel .s-time{background:#fff;}
+  .s-body{flex:1; min-width:0;}
+  .s-body b{display:block; font-size:13px; letter-spacing:-.2px;}
+  .s-body span{display:block; font-size:11px; color:var(--sub); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .s-flag{flex:none; font-size:9.5px; font-weight:800; border-radius:7px; padding:4px 7px;}
+  .s-flag.yes{background:var(--mint-soft); color:var(--mint-deep);}
+  .s-flag.no{background:#F1F4F7; color:var(--faint);}
+  /* ---------- patient detail ---------- */
+  .p-head{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+  .p-head .who b{font-size:18px; letter-spacing:-.4px;}
+  .p-head .who .meta{font-size:12px; color:var(--sub); margin-top:4px;}
+  .p-badges{display:flex; gap:7px; flex-wrap:wrap;}
+  .badge{font-size:10.5px; font-weight:800; border-radius:8px; padding:5px 9px;}
+  .badge.ok{background:var(--mint-soft); color:var(--mint-deep); border:1px solid #C9EDE2;}
+  .badge.warn{background:var(--amber-bg); color:var(--amber); border:1px solid #F3DFAE;}
+  .badge.info{background:var(--blue-bg); color:var(--blue); border:1px solid #D4E4F8;}
+  .chips{display:flex; gap:7px; flex-wrap:wrap; margin-top:12px;}
+  .chip{font-size:11px; font-weight:700; color:var(--sub); background:#F1F4F7; border-radius:8px; padding:5px 10px;}
+  .chip.hi{background:var(--mint-soft); color:var(--mint-deep);}
+  .divider{height:1px; background:var(--line); margin:16px 0;}
+  .sec-title{font-size:12px; font-weight:800; color:var(--ink); display:flex; align-items:center; gap:6px; margin-bottom:10px;}
+  .sec-title .tag{font-size:9.5px; font-weight:800; color:var(--faint); background:#F1F4F7; border-radius:6px; padding:3px 6px;}
+  .m-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px;}
+  @media (max-width:760px){.m-grid{grid-template-columns:repeat(2,1fr);}}
+  .m-cell{background:var(--mint-soft2); border:1px solid #E3F4EE; border-radius:13px; padding:11px 12px;}
+  .m-cell .mc-l{font-size:10.5px; font-weight:700; color:var(--sub);}
+  .m-cell .mc-v{font-size:17px; font-weight:800; color:var(--mint-deep); margin-top:4px; letter-spacing:-.3px;}
+  .m-cell .mc-bar{height:5px; background:#DBEFE8; border-radius:99px; margin-top:8px; overflow:hidden;}
+  .m-cell .mc-bar > div{height:100%; background:var(--mint); border-radius:99px;}
+  .qlist{display:flex; flex-direction:column; gap:7px;}
+  .q-row{display:flex; gap:9px; align-items:flex-start; font-size:12.5px; line-height:1.5;}
+  .q-row .qi{flex:none; width:18px; height:18px; border-radius:50%; background:var(--mint); color:#fff; font-size:10px; display:flex; align-items:center; justify-content:center; margin-top:1px;}
+  .points{display:flex; flex-direction:column; gap:8px;}
+  .point{
+    display:flex; gap:9px; font-size:12.5px; line-height:1.55; background:var(--blue-bg);
+    border:1px solid #D4E4F8; border-radius:12px; padding:11px 12px; color:#2D5FA8;
+  }
+  .point svg{flex:none; margin-top:1px;}
+  .actions{display:flex; gap:9px; margin-top:16px; flex-wrap:wrap;}
+  .btn{
+    display:inline-flex; align-items:center; gap:7px; border:none; cursor:pointer; font-family:inherit;
+    font-size:13px; font-weight:700; border-radius:12px; padding:11px 18px; letter-spacing:-.2px; transition:filter .15s;
+  }
+  .btn:active{transform:scale(.985);}
+  .btn.primary{background:var(--mint); color:#fff; box-shadow:0 5px 14px rgba(62,201,167,.35);}
+  .btn.primary:hover{filter:brightness(1.05);}
+  .btn.ghost{background:#fff; color:var(--ink); border:1.5px solid var(--line);}
+  .btn.ghost:hover{border-color:#CBD5E1;}
+  .marketing-note{
+    display:flex; gap:9px; margin-top:14px; background:#F6F8FA; border:1px dashed #D6DDE4; border-radius:12px;
+    padding:11px 12px; font-size:11px; color:var(--sub); line-height:1.55;
+  }
+  /* ---------- right column ---------- */
+  .funnel{display:flex; flex-direction:column; gap:9px; margin-top:12px;}
+  .f-row .f-top{display:flex; justify-content:space-between; font-size:11.5px; font-weight:700;}
+  .f-row .f-top span{color:var(--faint); font-weight:800;}
+  .f-bar{height:9px; background:#EEF1F5; border-radius:99px; margin-top:5px; overflow:hidden;}
+  .f-bar > div{height:100%; border-radius:99px; background:linear-gradient(90deg,#5AD6B7,var(--mint-dark));}
+  .week{display:flex; align-items:flex-end; gap:7px; height:86px; margin-top:14px;}
+  .week .w-col{flex:1; display:flex; flex-direction:column; align-items:center; gap:6px;}
+  .week .w-bar{width:100%; border-radius:7px 7px 3px 3px; background:var(--mint-soft); position:relative;}
+  .week .w-bar > div{position:absolute; bottom:0; left:0; right:0; border-radius:7px 7px 3px 3px; background:linear-gradient(180deg,#4FD3B2,#27AE8D);}
+  .week .w-lb{font-size:9.5px; color:var(--faint); font-weight:700;}
+  .tip{
+    display:flex; gap:9px; background:var(--mint-soft2); border:1px solid #DFF3EB; border-radius:13px;
+    padding:12px; font-size:11.5px; color:#1D7A63; line-height:1.55; margin-top:14px;
+  }
+  .footer{max-width:1280px; margin:0 auto; padding:0 28px 40px;}
+  .foot-note{font-size:10.5px; color:var(--faint); line-height:1.6;}
+  /* toast */
+  .toast{
+    position:fixed; left:50%; bottom:34px; transform:translate(-50%,14px); background:rgba(24,32,42,.94); color:#fff;
+    font-size:12.5px; font-weight:600; padding:12px 18px; border-radius:99px; opacity:0; pointer-events:none;
+    transition:all .25s; z-index:99; max-width:80%;
+  }
+  .toast.show{opacity:1; transform:translate(-50%,0);}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="brand">
+    <span class="logo">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l2 5.2L19 9l-5 1.8L12 16l-2-5.2L5 9l5-1.8z"/><circle cx="18.5" cy="16.5" r="1.8"/><circle cx="6" cy="17.5" r="1.3"/></svg>
+    </span>
+    <span>미리미소 Clinic<small>병원용 대시보드</small></span>
+  </div>
+  <span class="clinic-chip">베이직덴탈 이비인후·치과의원 (데모)</span>
+  <div class="nav-tabs">
+    <button class="on" data-tab="dash">대시보드</button>
+    <button data-tab="book">예약 관리</button>
+    <button data-tab="reports">환자 리포트</button>
+    <button data-tab="settings">설정</button>
+  </div>
+  <div class="nav-right">
+    <span class="today-date">2026. 10. 13. (화)</span>
+    <span class="demo-ribbon">DEMO · 가상 데이터</span>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1>오늘의 상담 준비</h1>
+      <p>미리미소로 들어온 예약과 환자 리포트를 한 화면에서 확인하세요. 모든 정보는 환자의 사전 동의 하에 제공됩니다.</p>
+    </div>
+    <span class="badge ok" style="font-size:11px; padding:8px 13px;">리포트 수신 · 이번 주 9건</span>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi">
+      <div class="k-label">오늘 미리미소 유입 예약</div>
+      <div class="k-value">3<small>건</small></div>
+      <div class="k-delta up">▲ 지난주 화요일 대비 +1건</div>
+    </div>
+    <div class="kpi">
+      <div class="k-label">리포트 사전 공유 (이번 주)</div>
+      <div class="k-value">9<small>/ 12건</small></div>
+      <div class="k-delta up">공유율 75% · 상담 준비 가능</div>
+    </div>
+    <div class="kpi">
+      <div class="k-label">첫 상담 → 시술 전환율</div>
+      <div class="k-value">41<small>%</small></div>
+      <div class="k-delta up">▲ 유입 전 27% 대비 +14%p (가상)</div>
+    </div>
+    <div class="kpi">
+      <div class="k-label">예약 노쇼율</div>
+      <div class="k-value">4.2<small>%</small></div>
+      <div class="k-delta up">▼ 기존 8.5% 대비 -4.3%p (가상)</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT: schedule -->
+    <div>
+      <div class="card">
+        <h3>오늘 상담 일정 <span class="hint">3건</span></h3>
+        <div class="sched" id="sched">
+          <button class="s-item sel" data-p="0">
+            <span class="s-time">10:30</span>
+            <span class="s-body"><b>김○○</b><span>48세 · 여 · 임플란트 + 라미네이트</span></span>
+            <span class="s-flag yes">리포트 ✓</span>
+          </button>
+          <button class="s-item" data-p="1">
+            <span class="s-time">11:00</span>
+            <span class="s-body"><b>이○○</b><span>56세 · 남 · 임플란트 (골이식 문의)</span></span>
+            <span class="s-flag yes">리포트 ✓</span>
+          </button>
+          <button class="s-item" data-p="2">
+            <span class="s-time">14:00</span>
+            <span class="s-body"><b>박○○</b><span>35세 · 여 · 라미네이트 / 교정</span></span>
+            <span class="s-flag yes">리포트 ✓</span>
+          </button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>운영 알림</h3>
+        <div class="point" style="margin-top:12px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+          <span>내일 예약 2건이 아직 리포트를 공유하지 않았습니다. 리마인드 발송은 환자 동의 하에 자동 진행됩니다.</span>
+        </div>
+        <div class="point" style="background:var(--amber-bg); border-color:#F3DFAE; color:var(--amber);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
+          <span>이번 주 콘텐츠 심의 결과: 노출 예정 숏폼 2건이 심의 통과, 1건 수정 요청(효과 보장 표현) — 수정 후 재검토 대기</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER: patient report -->
+    <div>
+      <div class="card" id="patientCard">
+        <div class="p-head">
+          <div class="who">
+            <b id="pdName">김○○</b>
+            <div class="meta" id="pdMeta">48세 · 여 · 10:30 상담 예정 · 미리미소 유입</div>
+          </div>
+          <div class="p-badges">
+            <span class="badge ok" id="pdConsent">✓ 리포트 공유 동의</span>
+            <span class="badge info" id="pdQuest">질문지 7/10 확인</span>
+          </div>
+        </div>
+        <div class="chips" id="pdChips"></div>
+
+        <div class="divider"></div>
+
+        <div class="sec-title">미소 분석 요약 <span class="tag">사진 기반 추정 · 교육용</span></div>
+        <div class="m-grid" id="pdMetrics"></div>
+
+        <div class="divider"></div>
+
+        <div class="sec-title">환자가 확인한 상담 질문 TOP</div>
+        <div class="qlist" id="pdQuestions"></div>
+
+        <div class="divider"></div>
+
+        <div class="sec-title">상담 포인트 제안 <span class="tag">리포트 기반 · 데모</span></div>
+        <div class="points" id="pdPoints"></div>
+
+        <div class="marketing-note" id="pdMarketing"></div>
+
+        <div class="actions">
+          <button class="btn primary" id="btnNote">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h9l4 4v12H8z"/><path d="M17 4v4h4M11 13h6M11 17h4"/></svg>
+            상담 노트에 추가
+          </button>
+          <button class="btn ghost" id="btnFull">전체 리포트 열기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: funnel & trend -->
+    <div>
+      <div class="card">
+        <h3>미리미소 유입 퍼널 <span class="hint">이번 주 · 가상</span></h3>
+        <div class="funnel">
+          <div class="f-row"><div class="f-top">시뮬레이션 완료 <span>38</span></div><div class="f-bar"><div style="width:100%;"></div></div></div>
+          <div class="f-row"><div class="f-top">질문지 생성 <span>31</span></div><div class="f-bar"><div style="width:82%;"></div></div></div>
+          <div class="f-row"><div class="f-top">예약 요청 <span>12</span></div><div class="f-bar"><div style="width:32%;"></div></div></div>
+          <div class="f-row"><div class="f-top">상담 완료 <span>9</span></div><div class="f-bar"><div style="width:24%;"></div></div></div>
+        </div>
+        <div class="tip">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px;"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-3.6 10.8c.7.6 1.1 1.3 1.3 2.2h4.6c.2-.9.6-1.6 1.3-2.2A6 6 0 0012 3z"/></svg>
+          <span>리포트를 사전 공유한 환자의 첫 상담 시간이 평균 <b>12분 짧고</b>, 질문지 확인률이 높은 환자일수록 전환율이 높습니다(데모 가상 지표).</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>주간 유입 추이 <span class="hint">예약 요청 · 가상</span></h3>
+        <div class="week" id="weekChart"></div>
+        <div class="divider"></div>
+        <p class="foot-note">병원 간 비교 통계는 제공되지 않습니다. 모든 지표는 해당 병원 단위로만 집계됩니다.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <p class="foot-note">
+    ※ 본 화면은 프로토타입 데모이며 모든 환자·수치는 가상 데이터입니다. 실제 서비스 시 환자 정보는 개인정보보호법(민감정보) 기준으로 처리되며, 리포트 열람은 환자의 명시적 동의에 한해 제공됩니다. 진단·처방 목적이 아닌 상담 준비 도구입니다.
+  </p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+
+  /* ---------- demo patient data (all fictional) ---------- */
+  var PATIENTS = [
+    {
+      name: '김○○', meta: '48세 · 여 · 10:30 상담 예정 · 미리미소 유입',
+      consent: true, marketing: false, quest: '질문지 7/10 확인',
+      chips: [['임플란트', 'hi'], ['라미네이트 · 미백', ''], ['국비지원 문의', '']],
+      metrics: [
+        ['치아 노출도', '42%', 42], ['좌우 대칭성', '94%', 94],
+        ['잇몸 노출', '1.8mm', 36], ['앞니 편차', '±0.9mm', 58]
+      ],
+      questions: [
+        '총 비용에 포함/불포함 항목 (촬영·골이식·크라운·검진)',
+        '임플란트 시스템(브랜드)과 보증 기간·조건',
+        'CT·파노라마 촬영 필요 여부와 비용',
+        '문제 발생 시 재시술 절차·비용·기간',
+        '만 65세 미만이라 급여 적용 여부 확인 요청'
+      ],
+      points: [
+        '심미 관심(라미네이트)과 임플란트를 함께 문의 — 스마일 라인 디자인 자료를 미리 준비해두면 상담 효율이 좋습니다.',
+        '비용 총액 기준 견적서를 요청한 이력이 있습니다. 포함/불포함 항목을 명확히 안내하세요.',
+        '골 상태 관련 질문은 없음 — CT 촬영 후 설명이 필요한 첫 상담으로 예상됩니다.'
+      ],
+      marketingNote: '마케팅 활용 동의: <b>거부</b> — 이 환자의 사진·리포트는 사례 콘텐츠 등 어떤 용도로도 활용할 수 없습니다.'
+    },
+    {
+      name: '이○○', meta: '56세 · 남 · 11:00 상담 예정 · 미리미소 유입',
+      consent: true, marketing: true, quest: '질문지 3/10 확인',
+      chips: [['임플란트', 'hi'], ['골이식 문의', ''], ['흡연 병력 기재됨', '']],
+      metrics: [
+        ['치아 노출도', '55%', 55], ['좌우 대칭성', '88%', 88],
+        ['잇몸 노출', '2.4mm', 48], ['앞니 편차', '±1.4mm', 70]
+      ],
+      questions: [
+        '골이식이 필요한지, 필요하면 비용·기간은 얼마나 되는지',
+        '치료 기간과 내원 횟수 (직장 일정 조율)',
+        '흡연이 임플란트 성공률에 미치는 영향'
+      ],
+      points: [
+        '골이식 관련 질문이 가장 많음 — CT 소견을 먼저 확인하고 안내하면 상담이 빨라집니다.',
+        '흡연 병력이 리포트에 기재되어 있습니다. 성공률·관리 지침 관련 자료 준비를 권장합니다.',
+        '질문지 확인률 30% — 상담 시작 전 리마인드를 보내 확인을 유도할 수 있습니다.'
+      ],
+      marketingNote: '마케팅 활용 동의: <b>동의</b> — 사례 활용 시 별도 최종 확인 후 사용 가능합니다.'
+    },
+    {
+      name: '박○○', meta: '35세 · 여 · 14:00 상담 예정 · 미리미소 유입',
+      consent: true, marketing: false, quest: '질문지 9/10 확인',
+      chips: [['라미네이트 · 미백', 'hi'], ['교정 병행 문의', ''], ['시뮬 2종 생성됨', '']],
+      metrics: [
+        ['치아 노출도', '48%', 48], ['좌우 대칭성', '96%', 96],
+        ['잇몸 노출', '1.2mm', 24], ['앞니 편차', '±0.6mm', 40]
+      ],
+      questions: [
+        '라미네이트와 교정 중 우선순위 — 치아 삭제 범위 확인',
+        '시뮬레이션과 실제 결과의 차이 범위',
+        '유지관리(마진·크라운 수명)와 비용 분할 안내'
+      ],
+      points: [
+        '질문 확인률 90% — 정보 이해도가 높아 상담은 비교 옵션 정리 위주로 진행하면 됩니다.',
+        '교정 우선 여부 판단 자료(분석 지표)가 리포트에 포함되어 있습니다.',
+        '심미 시뮬레이션 2종(라미네이트/미백)을 생성했으며 상담 참고용으로 열람 가능합니다.'
+      ],
+      marketingNote: '마케팅 활용 동의: <b>거부</b> — 시뮬레이션 이미지의 외부 공유·활용이 불가합니다.'
+    }
+  ];
+
+  var WEEK = [
+    { d: '월', v: 3 }, { d: '화', v: 5 }, { d: '수', v: 4 }, { d: '목', v: 6 },
+    { d: '금', v: 8 }, { d: '토', v: 7 }, { d: '일', v: 9 }
+  ];
+
+  /* ---------- render weekly chart ---------- */
+  (function () {
+    var max = Math.max.apply(null, WEEK.map(function (w) { return w.v; }));
+    var html = WEEK.map(function (w) {
+      var h = Math.round(100 * w.v / max);
+      return '<div class="w-col"><div class="w-bar" style="height:' + h + 'px;"><div style="height:100%;"></div></div><span class="w-lb">' + w.d + '</span></div>';
+    }).join('');
+    $('#weekChart').innerHTML = html;
+  })();
+
+  /* ---------- patient detail ---------- */
+  function renderPatient(i) {
+    var p = PATIENTS[i];
+    $('#pdName').textContent = p.name;
+    $('#pdMeta').textContent = p.meta;
+    $('#pdQuest').textContent = p.quest;
+    var consentEl = $('#pdConsent');
+    if (p.consent) {
+      consentEl.textContent = '✓ 리포트 공유 동의';
+      consentEl.className = 'badge ok';
+    } else {
+      consentEl.textContent = '리포트 미공유';
+      consentEl.className = 'badge warn';
+    }
+    $('#pdChips').innerHTML = p.chips.map(function (c) {
+      return '<span class="chip ' + c[1] + '">' + c[0] + '</span>';
+    }).join('');
+    $('#pdMetrics').innerHTML = p.metrics.map(function (m) {
+      return '<div class="m-cell"><div class="mc-l">' + m[0] + '</div><div class="mc-v">' + m[1] +
+             '</div><div class="mc-bar"><div style="width:' + m[2] + '%;"></div></div></div>';
+    }).join('');
+    $('#pdQuestions').innerHTML = p.questions.map(function (q) {
+      return '<div class="q-row"><span class="qi">✓</span><span>' + q + '</span></div>';
+    }).join('');
+    $('#pdPoints').innerHTML = p.points.map(function (pt) {
+      return '<div class="point"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-3.6 10.8c.7.6 1.1 1.3 1.3 2.2h4.6c.2-.9.6-1.6 1.3-2.2A6 6 0 0012 3z"/></svg><span>' + pt + '</span></div>';
+    }).join('');
+    $('#pdMarketing').innerHTML =
+      '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex:none;margin-top:1px;"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg><span>' +
+      p.marketingNote + '</span>';
+  }
+
+  /* ---------- schedule selection ---------- */
+  var items = document.querySelectorAll('.s-item');
+  Array.prototype.forEach.call(items, function (el) {
+    el.addEventListener('click', function () {
+      Array.prototype.forEach.call(items, function (x) { x.classList.remove('sel'); });
+      el.classList.add('sel');
+      renderPatient(parseInt(el.getAttribute('data-p'), 10));
+    });
+  });
+  renderPatient(0);
+
+  /* ---------- actions ---------- */
+  var toastTimer = null;
+  function toast(msg) {
+    var t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2400);
+  }
+  $('#btnNote').addEventListener('click', function () {
+    toast('상담 노트에 요약이 복사되었습니다 (데모)');
+  });
+  $('#btnFull').addEventListener('click', function () {
+    toast('데모에서는 전체 리포트 뷰가 제공되지 않아요');
+  });
+  document.querySelectorAll('.nav-tabs button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (b.getAttribute('data-tab') === 'dash') return;
+      toast('데모 화면 — "대시보드" 탭만 제공됩니다');
+    });
+  });
+})();
+</script>
+</body>
+</html>
